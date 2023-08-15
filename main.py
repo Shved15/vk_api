@@ -8,7 +8,6 @@ app = FastAPI()
 
 prefix = '/api/v1'
 
+app.add_middleware(SingleRequestMiddleware)
 app.include_router(like_router, prefix=prefix)
 app.include_router(profile_router, prefix=prefix)
-
-app.add_middleware(SingleRequestMiddleware)
