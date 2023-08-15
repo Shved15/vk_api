@@ -1,7 +1,8 @@
-from fastapi import APIRouter
 from typing import Union
 
-from src.common.base_schemas import SuccessResponse, ErrorResponse
+from fastapi import APIRouter
+
+from src.common.base_schemas import ErrorResponse, SuccessResponse
 from src.routes.utils import fetch_vk_post_data
 from src.schemas.likes import PostData
 

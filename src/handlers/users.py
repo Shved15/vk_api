@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException, APIRouter
+from fastapi import APIRouter, FastAPI, HTTPException
 
 from src.common.base_schemas import ErrorResponse, SuccessResponse
-from src.routes.utils import fetch_vk_user_data, fetch_vk_subscriptions
+from src.routes.utils import fetch_vk_subscriptions, fetch_vk_user_data
 from src.schemas.users import ProfileData
 
 router = APIRouter()

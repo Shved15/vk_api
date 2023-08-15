@@ -1,5 +1,7 @@
 import httpx
-from config import ACCESS_TOKEN, VK_USER_GET_ULR, VK_SUBSCRIPTION_URL, VK_WALL_URL, VK_WALL_URL_GBI
+
+from config import (ACCESS_TOKEN, VK_SUBSCRIPTION_URL, VK_USER_GET_ULR,
+                    VK_WALL_URL, VK_WALL_URL_GBI)
 
 
 async def fetch_vk_user_data(profile: str):
