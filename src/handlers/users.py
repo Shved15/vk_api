@@ -1,45 +1,37 @@
 from fastapi import FastAPI, HTTPException, APIRouter
-import requests
 
-from config import ACCESS_TOKEN, VK_USER_GET_ULR, VK_SUBSCRIPTION_URL
-from src.schemas.users import ErrorResponse, SuccessResponse, ProfileData
+from src.common.base_schemas import ErrorResponse, SuccessResponse
+from src.routes.utils import fetch_vk_user_data, fetch_vk_subscriptions
+from src.schemas.users import ProfileData
 
 router = APIRouter()
 
 api = FastAPI()
 
 
-@router.get("/profile/")
 async def get_user(method: str, profile: str):
     if method != 'profile':
         return ErrorResponse(status="error", code=400, message="Unsupported method")
 
-    response = requests.get(VK_USER_GET_ULR, params={
-        "user_ids": profile,
-        "fields": "photo_max_orig,followers_count",
-        "v": "5.131",
-        "access_token": ACCESS_TOKEN
-    })
+    user_data_response = await fetch_vk_user_data(profile)
 
-    if response.status_code != 200:
-        raise HTTPException(status_code=403, detail="Invalid account name")
+    if user_data_response.status_code != 200:
+        return ErrorResponse(status="error", code=403, message="Invalid account name")
 
-    user_data = response.json().get("response", [{}])[0]
+    response_data = user_data_response.json().get("response", [])
+    if not response_data:
+        return ErrorResponse(status="error", code=403, message="Invalid account name")
+    user_data = response_data[0]
+
     user_id = user_data.get("id")
 
     # Получение подписок
-    subscriptions_response = requests.get(VK_SUBSCRIPTION_URL, params={
-        "user_id": user_id,
-        "extended": 0,
-        "v": "5.131",
-        "access_token": ACCESS_TOKEN
-    })
+    subscriptions_data_response = await fetch_vk_subscriptions(user_id)
 
-    if subscriptions_response.status_code != 200:
+    if subscriptions_data_response.status_code != 200:
         raise HTTPException(status_code=403, detail="Failed to get subscriptions")
 
-    subscriptions_data = subscriptions_response.json().get("response", {})
-    print(subscriptions_response.json())
+    subscriptions_data = subscriptions_data_response.json().get("response", {})
     total_subscriptions = str(subscriptions_data.get("users", {}).get("count", 0) +
                               subscriptions_data.get("groups", {}).get("count", 0))
 

@@ -14,15 +14,3 @@ class UserProfile(BaseModel):
     profile_id: str
     avatar_url: str
     posts: List[PostData]
-
-
-class SuccessResponse(BaseModel):
-    status: str
-    code: int
-    data: UserProfile
-
-
-class ErrorResponse(BaseModel):
-    status: str
-    code: int
-    message: str

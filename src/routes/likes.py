@@ -1,30 +1,26 @@
 from fastapi import APIRouter
 from typing import Union
-import requests
 
-from config import VK_WALL_URL_GBI, ACCESS_TOKEN
-from src.schemas.likes import ErrorResponse, SuccessResponse, PostData
+from src.common.base_schemas import SuccessResponse, ErrorResponse
+from src.routes.utils import fetch_vk_post_data
+from src.schemas.likes import PostData
 
 router = APIRouter()
 
 
 @router.get("/likes/", response_model=Union[SuccessResponse, ErrorResponse])
-async def get_post_data(method: str, link: str) -> Union[SuccessResponse, ErrorResponse]:
+async def get_post_data(link: str, method: str = 'likes') -> Union[SuccessResponse, ErrorResponse]:
     if method != 'likes':
         return ErrorResponse(status="error", code=400, message="Unsupported method")
 
     post_id = link.split('wall')[-1]
 
-    response = requests.get(VK_WALL_URL_GBI, params={
-        "posts": post_id,
-        "v": "5.131",
-        "access_token": ACCESS_TOKEN
-    })
+    post_data_response = await fetch_vk_post_data(post_id)
 
-    if response.status_code != 200:
+    if post_data_response.status_code != 200:
         return ErrorResponse(status="error", code=403, message="Invalid account name")
 
-    post_data = response.json().get("response", [{}])[0]
+    post_data = post_data_response.json().get("response", [{}])[0]
 
     if not post_data:
         return ErrorResponse(status="error", code=403, message="Invalid account name")
