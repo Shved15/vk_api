@@ -27,7 +27,7 @@ docker-compose up --build
 ### Инструкция по использованию API
 
 1. Перейдите на http://localhost:8000/docs
-2. В endpoint `likes` введите ссылку на пост в VK в поле `link`, например: https://vk.com/wylsa <br>
+2. В endpoint `likes` введите ссылку на пост в VK в поле `link`, например: https://vk.com/wall3460930_218216 <br>
 Ответ:
 ```
 {
