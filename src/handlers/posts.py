@@ -10,15 +10,18 @@ router = APIRouter()
 
 
 async def get_posts_data(method: str, profile: str) -> Union[SuccessResponse, ErrorResponse]:
+    """Получение данных постов пользователя"""
+
     if method != 'posts':
         return ErrorResponse(status="error", code=400, message="Unsupported method")
 
-    # Получаем данные профиля
+    # Получаем данные профиля (routes/utils.py)
     user_data_response = await fetch_vk_user_data(profile)
 
     if user_data_response.status_code != 200:
         return ErrorResponse(status="error", code=403, message="Invalid account name")
 
+    # Извлекаем данные ответа.
     response_data = user_data_response.json().get("response", [])
     if not response_data:
         return ErrorResponse(status="error", code=403, message="Invalid account name")
@@ -26,7 +29,7 @@ async def get_posts_data(method: str, profile: str) -> Union[SuccessResponse, Er
 
     user_id = user_data.get("id")
 
-    # Получаем последние 10 постов пользователя
+    # Получаем последние 10 постов пользователя (routes/utils.py)
     user_posts_response = await fetch_vk_user_posts(user_id)
 
     if user_posts_response.status_code != 200:

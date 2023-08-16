@@ -10,9 +10,12 @@ api = FastAPI()
 
 
 async def get_user(method: str, profile: str):
+    """Получение данных пользователя"""
+
     if method != 'profile':
         return ErrorResponse(status="error", code=400, message="Unsupported method")
 
+    # Получение данных пользователя (routes/utils.py)
     user_data_response = await fetch_vk_user_data(profile)
 
     if user_data_response.status_code != 200:
@@ -25,12 +28,13 @@ async def get_user(method: str, profile: str):
 
     user_id = user_data.get("id")
 
-    # Получение подписок
+    # Получение подписок пользователя (routes/utils.py)
     subscriptions_data_response = await fetch_vk_subscriptions(user_id)
 
     if subscriptions_data_response.status_code != 200:
         raise HTTPException(status_code=403, detail="Failed to get subscriptions")
 
+    # Общее количество подписок (сообщества + пользователи)
     subscriptions_data = subscriptions_data_response.json().get("response", {})
     total_subscriptions = str(subscriptions_data.get("users", {}).get("count", 0) +
                               subscriptions_data.get("groups", {}).get("count", 0))

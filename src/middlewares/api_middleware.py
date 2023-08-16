@@ -10,6 +10,7 @@ PROTECTED_ENDPOINTS = ["/api/v1/likes/", "/api/v1/profile-data/"]
 
 
 class SingleRequestMiddleware(BaseHTTPMiddleware):
+    """Middleware для ограничения количества одновременных запросов с одного IP к защищенным эндпоинтам."""
 
     @staticmethod
     async def is_concurrent_request(connection, client_ip, path):
@@ -25,6 +26,7 @@ class SingleRequestMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         client_ip = request.client.host
 
+        # Если запрос к защищенному эндпоинту, то проверяем, есть ли уже активный запрос
         if request.url.path in PROTECTED_ENDPOINTS:
             connection = await asyncio_redis.Connection.create(host=REDIS_HOST, port=REDIS_PORT)
 

@@ -11,11 +11,14 @@ router = APIRouter()
 
 @router.get("/likes/", response_model=Union[SuccessResponse, ErrorResponse])
 async def get_post_data(link: str, method: str = 'likes') -> Union[SuccessResponse, ErrorResponse]:
+    """Получаем актуальные данные поста"""
     if method != 'likes':
         return ErrorResponse(status="error", code=400, message="Unsupported method")
 
+    # Забираем id поста из ссылки
     post_id = link.split('wall')[-1]
 
+    # Получаем данные поста (.utils.py)
     post_data_response = await fetch_vk_post_data(post_id)
 
     if post_data_response.status_code != 200:
